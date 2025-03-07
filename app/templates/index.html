@@ -1,0 +1,19 @@
+{{ extens 'base.html' }}
+
+{% block content %}
+    {% for category in categories %}
+        <h2>{{ category.name }}</h2>
+        <ul>
+            {% for product in category.prooducts %}
+                <li>
+                    <a href="{{ url_for('product', product_id=product.id) }}">
+                        <!-- <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" width="100"> -->
+                        <p>{{ product.name }}</p>
+                        <p>{{ product.price }}</p>
+                    </a>
+                    <a href="{{ url_for('product', product_id=product.id) }}">{{ post.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}

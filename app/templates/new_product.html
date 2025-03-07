@@ -1,0 +1,31 @@
+{{ extends 'base.html' }}
+
+{% block content %}
+    <h1>New Product</h1>
+    <form action="{{ url_for('new_product') }}" method="post">
+        {% form.hidden_tag() %}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name() }}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description() }}
+        </p>
+        <p>
+            {{ form.price.label }}<br>
+            {{ form.price() }}
+        </p>
+        <p>
+            {{ form.category.label }}<br>
+            {{ form.category() }}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
+
+    <a href="{{ url_for('index') }}">
+        <p>Back to products</p>
+    </a>
+{% endblock %}

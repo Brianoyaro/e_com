@@ -1,0 +1,18 @@
+{{ extends 'base.html' }}
+
+{% block content %}
+    <h1>{{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+    <ul>
+        {% for product in category.products %}
+            <li>
+                <a href="{{ url_for('product', product_id=product.id) }}">
+                    {{ product.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}">
+        <p>Back to products</p>
+    </a>
+{% endblock %}
