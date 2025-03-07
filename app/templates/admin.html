@@ -1,0 +1,17 @@
+{{ extends 'base.html' }}
+
+{% block content %}
+    <h1>Admin</h1>
+    <a href="{{ url_for('add_category') }}">
+        <p>Add category</p>
+    </a>
+    <a href="{{ url_for('add_product') }}">
+        <p>Add product</p>
+    </a>
+    <!-- <a href="{{ url_for('view_orders') }}">
+        <p>View orders</p>
+    </a> -->
+    <a href="{{ url_for('index') }}">
+        <p>Back to products</p>
+    </a>
+{% endblock %}  

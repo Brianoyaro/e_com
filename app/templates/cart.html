@@ -12,7 +12,7 @@
                         <img src="{{ item.image }}" alt="{{ item.name }}" width="100">
                         {{ item.name }} - {{ item.price }}
                         <p>Quantity: {{ item.quantity }}</p>
-                        <a href="{{ url_for('remove_from_cart', index=loop.index0) }}">
+                        <a href="{{ url_for('remove_from_cart', cart_id=item.id) }}">
                             <p>Remove</p>
                         </a>
                     </div>
