@@ -1,13 +1,13 @@
-{{ extends 'base.html' }}
+{% extends 'base.html' %}
 
 {% block content %}
     <h1>Login</h1>
-    <form action="{{ url_for('login') }}" method="post">
+    <form action="{{ url_for('main.login') }}" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
+            {{ form.email.label }}<br>
+            {{ form.email(size=32) }}<br>
+            {% for error in form.email.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
@@ -20,5 +20,5 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
-    <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+    <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register</a></p>
 {% endblock %}

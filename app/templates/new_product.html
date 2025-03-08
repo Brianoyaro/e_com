@@ -1,9 +1,9 @@
-{{ extends 'base.html' }}
+{% extends 'base.html' %}
 
 {% block content %}
     <h1>New Product</h1>
-    <form action="{{ url_for('new_product') }}" method="post">
-        {% form.hidden_tag() %}
+    <form action="{{ url_for('main.new_product') }}" method="post">
+        {{ form.hidden_tag() }}
         <p>
             {{ form.name.label }}<br>
             {{ form.name() }}
@@ -24,8 +24,4 @@
             {{ form.submit() }}
         </p>
     </form>
-
-    <a href="{{ url_for('index') }}">
-        <p>Back to products</p>
-    </a>
 {% endblock %}

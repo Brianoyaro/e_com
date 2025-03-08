@@ -1,17 +1,16 @@
-{{ extends 'base.html' }}
+{% extends 'base.html' %}
 
 {% block content %}
-    <h1>Admin</h1>
-    <a href="{{ url_for('add_category') }}">
+    <h1>Admin Panel</h1>
+    <hr>
+    <a href="{{ url_for('main.new_category') }}">
         <p>Add category</p>
     </a>
-    <a href="{{ url_for('add_product') }}">
+    <a href="{{ url_for('main.new_product') }}">
         <p>Add product</p>
     </a>
-    <!-- <a href="{{ url_for('view_orders') }}">
-        <p>View orders</p>
-    </a> -->
-    <a href="{{ url_for('index') }}">
+    <!-- implement view orders capabilities-->
+    <a href="{{ url_for('main.index') }}">
         <p>Back to products</p>
     </a>
 {% endblock %}  
