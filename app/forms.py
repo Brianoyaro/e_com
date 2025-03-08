@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from app.models import User, Category
@@ -28,6 +29,7 @@ class ProductForm(FlaskForm):
     description = StringField('Description', validators=[DataRequired()])
     price = FloatField('Price', validators=[DataRequired()])
     #stock = IntegerField('Stock', validators=[DataRequired()])
+    image = FileField('Product Image', validators=[FileAllowed(['jpg', 'png'])])
     category = SelectField('Category', coerce=int)
     submit = SubmitField('Add Product')
     

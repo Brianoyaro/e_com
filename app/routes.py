@@ -6,6 +6,14 @@ from app.models import User, Product, Category, Cart, Order
 from urllib.parse import urlparse as url_parse
 from app.forms import LoginForm, RegistrationForm, ProductForm, CategoryForm
 from app import create_app, db
+import os
+import secrets
+from PIL import Image
+
+'''basedir = os.path.abspath(os.path.dirname(__file__))
+image_folder = os.path.join(basedir, 'static')
+#picture_path = os.path.join(image_folder, filename)'''
+
 
 #app = create_app()
 main = Blueprint('main', __name__)
@@ -72,7 +80,21 @@ def register():
 def product(product_id):
     '''show a product in detail'''
     product = Product.query.get(product_id)
-    return render_template('product.html', title=product.name, product=product)
+    quantity = request.args.get('quantity', 1)
+    print(quantity)
+    return render_template('product.html', title=product.name, product=product, quantity=quantity)
+
+def save_image(pic_data):
+    """saves uploaded image"""
+    _, fn_ext = os.path.splitext(pic_data.filename)
+    random_hex = secrets.token_hex(8)
+    filename = random_hex + fn_ext
+    picture_path = os.path.join(main.root_path, 'static', filename)
+    image_size = (125, 125)
+    image = Image.open(pic_data)
+    image.thumbnail(image_size)
+    image.save(picture_path)
+    return filename
 
 #ADMIN ROUTE
 @main.route('/new-product', methods=['GET', 'POST'])
@@ -82,6 +104,10 @@ def new_product():
     form = ProductForm()
     if form.validate_on_submit():
         product = Product(name=form.name.data, description=form.description.data, price=form.price.data, category_id=form.category.data)
+        if form.image.data:
+            picture_file = save_image(form.image.data)
+            product.image = picture_file
+
         db.session.add(product)
         db.session.commit()
         flash('Product added!')

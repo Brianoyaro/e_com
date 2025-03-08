@@ -33,7 +33,7 @@ class Product(db.Model):
     description = db.Column(db.String(120), index=True)
     price = db.Column(db.Float)
     #stock = db.Column(db.Integer)
-    #image = db.Column(db.String(120), index=True)
+    image = db.Column(db.String(120), index=True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
     # Add a back-reference to Cart
