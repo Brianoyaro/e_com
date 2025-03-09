@@ -9,6 +9,7 @@ from app import create_app, db
 import os
 import secrets
 from PIL import Image
+import requests
 
 '''basedir = os.path.abspath(os.path.dirname(__file__))
 image_folder = os.path.join(basedir, 'static')
@@ -224,6 +225,13 @@ def new_admin():
 def checkout():
     '''checkout all items in a cart'''
     # M-Pesa integration
+    # 1)receive phone number from user
+    # 2)send a request to M-Pesa
+    base_url = 'https://4938-102-222-145-50.ngrok-free.app' # use ngrok url
+    resp = requests.get(base_url + '/simulate')
+    print(resp)
+    # 3)receive a response from M-Pesa
+    # 4)update the cart to an order
     #***************************************************************************************************************************
     # retrieve transaction details then include them in the order objects below
     carts = Cart.query.filter_by(user_id=current_user.id).all()

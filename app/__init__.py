@@ -23,4 +23,7 @@ def create_app(config_class=Config):
     from .routes import main  # Import your blueprint
     app.register_blueprint(main)  # Register
     
+    from .mpesa_routes import mpesa
+    app.register_blueprint(mpesa)
+    
     return app
