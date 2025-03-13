@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Cart</h1>
+    {% if carts|length == 0 %}
+        <p>Your cart is empty</p>
+    {% else %}
+        <ul>
+            {% for item in carts %}
+                <li>
+                    <div>
+                        <a href="{{ url_for('main.product', product_id=item.product.id ) }}?quantity={{ item.quantity }}">
+                            {% if item.product.image %}
+                            <img src="{{ url_for('static', filename=item.product.image) }}" alt="{{ item.product.name }}" width="100">
+                            {% else %}
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}" width="100">
+                            {% endif %}
+                            <p>{{ item.product.name }}</p>
+                            <p>Price: {{ item.product.price }}</p>
+                            <p>Quantity: {{ item.quantity }}</p>
+                        </a>
+                        <a href="{{ url_for('main.remove_from_cart', cart_id=item.id) }}">
+                            <p>Remove</p>
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <p>Total: ${{ total }}</p>
+        <a href="{{ url_for('main.checkout') }}">
+            <p>Checkout</p>
+        </a>
+    {% endif %}
+{% endblock %}

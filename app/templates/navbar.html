@@ -1,0 +1,21 @@
+<nav>
+    <ul>
+        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+        {% if current_user.is_anonymous %}
+            <li><a href="{{ url_for('main.register') }}">Register</a></li>
+            <li><a href="{{ url_for('main.login') }}">Login</a></li>
+        {% else %}
+            {% if current_user.is_admin %}
+                <li><a href="{{ url_for('main.new_category') }}">New Category</a></li>
+                <li><a href="{{ url_for('main.new_product') }}">New Product</a></li>
+                <li><a href="{{ url_for('main.admin') }}">Admin Panel</a></li>
+            {% else%}
+                <li><a href="{{ url_for('main.cart') }}">Cart</a></li>
+                <!-- Create profiles for users -->
+                <li><a href="#">Profile</a></li>
+                <!-- profile ends here--> 
+            {% endif %}
+            <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+</nav>

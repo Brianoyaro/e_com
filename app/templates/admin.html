@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Admin Panel</h1>
+    <hr>
+    <a href="{{ url_for('main.new_category') }}">
+        <p>Add category</p>
+    </a>
+    <a href="{{ url_for('main.new_product') }}">
+        <p>Add product</p>
+    </a>
+    <!-- implement view orders capabilities-->
+    <a href="{{ url_for('main.index') }}">
+        <p>Back to products</p>
+    </a>
+{% endblock %}  

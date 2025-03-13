@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for category in categories %}
+        <h2>{{ category.name }}</h2>
+        <ul>
+            {% for product in category.products %}
+                <li>
+                    <a href="{{ url_for('main.product', product_id=product.id) }}">
+                        <!--product image goes here-->
+                        {% if product.image %}
+                            <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" width="100">
+                        {% else %}
+                            <img src="{{ product.image }}" alt="{{ product.name }}" width="100">
+                        {% endif %}
+                        <p>{{ product.name }}</p>
+                        <p>{{ product.price }}</p>
+                    </a>
+                    <a href="{{ url_for('main.product', product_id=product.id) }}">{{ product.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}
