@@ -141,14 +141,14 @@ def add_to_cart(product_id):
     '''add a product to a cart'''
     product = Product.query.get(product_id)
     quantity = request.form.get('quantity')
-    existing_cart = Cart.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    existing_cart = Cart.query.filter_by(user_id=current_user.id, product=product).first()
     if existing_cart:
         existing_cart.quantity += int(quantity)
         db.session.commit()
         flash('Product added to cart!')
         return redirect(url_for('main.index'))
     # else create a new cart
-    cart = Cart(user_id=current_user.id, product_price=product.price, quantity=quantity)
+    cart = Cart(user_id=current_user.id, product=product, quantity=quantity)
     db.session.add(cart)
     db.session.commit()
     flash('Product added to cart!')
@@ -171,7 +171,7 @@ def cart():
     carts = Cart.query.filter_by(user_id=current_user.id).all()
     total = 0
     for cart in carts:
-        total += cart.product_price * cart.quantity
+        total += cart.product.price * cart.quantity
     return render_template('cart.html', title='My Cart', carts=carts, total=total)
 
 @main.route('/admin')

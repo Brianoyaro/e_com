@@ -54,10 +54,12 @@ class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     quantity = db.Column(db.Integer)
-    product_price = db.Column(db.Float, db.ForeignKey('product.price'))
     
     # Add a foreign link to the product incase we need to access the product details later.
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    
+    # Add a back-reference to Product
+    product = db.relationship("Product", back_populates="carts")
     
     def __repr__(self):
         return '<Cart {}>'.format(self.id)
