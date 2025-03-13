@@ -8,7 +8,10 @@
             <li>
                 <a href="{{ url_for('main.product', product_id=product.id) }}">
                     <img src="{{ product.image }}" alt="{{ product.name }}" width="100">
-                    {{ product.name }}
+                    <p>Name: {{ product.name }}</p>
+                    <p>Description: {{ product.description }}</p>
+                    <p>Quantity: {{ product.quantity }}</p>
+                    <p>Price: ${{ product.price }}</p>
                 </a>
             </li>
         {% endfor %}

@@ -13,8 +13,9 @@
                         {% else %}
                             <img src="{{ product.image }}" alt="{{ product.name }}" width="100">
                         {% endif %}
-                        <p>{{ product.name }}</p>
-                        <p>{{ product.price }}</p>
+                        <p>Name: {{ product.name }}</p>
+                        <p>Quantity: {{ product.quantity }}</p>
+                        <p>Price: ${{ product.price }}</p>
                     </a>
                     <a href="{{ url_for('main.product', product_id=product.id) }}">{{ product.title }}</a>
                 </li>
