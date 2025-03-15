@@ -1,8 +1,8 @@
 from flask_login import login_user, logout_user, current_user, login_required
 from flask import render_template, flash, redirect, url_for, request, abort, Blueprint
-from app.models import User, Product, Category, Cart, Order
+from app.models import User, Product, Category, Cart, Order, OrderItem, Transaction
 from urllib.parse import urlparse as url_parse
-from app.forms import LoginForm, RegistrationForm, ProductForm, CategoryForm
+from app.forms import LoginForm, RegistrationForm, ProductForm, CategoryForm, MpesaDetailsForm
 from app import db
 import os
 import secrets
@@ -77,7 +77,7 @@ def register():
 @login_required
 def product(product_id):
     '''show a product in detail'''
-    product = Product.query.get(product_id)
+    product = Product.query.get_or_404(product_id)
     # I think we can do better. We can allow the user to specify the quantity they want to buy and pass the data through a form rather than a query string.
     quantity = request.args.get('quantity', 1)
     print(quantity)
@@ -139,7 +139,7 @@ def new_category():
 @login_required
 def add_to_cart(product_id):
     '''add a product to a cart'''
-    product = Product.query.get(product_id)
+    product = Product.query.get_or_404(product_id)
     quantity = request.form.get('quantity')
     existing_cart = Cart.query.filter_by(user_id=current_user.id, product=product).first()
     if existing_cart:
@@ -208,26 +208,65 @@ def new_admin():
     return render_template('register.html', title='New-admin', form=form)
 
 # Hndle this later and last.
-@main.route('/checkout')
+@main.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
     '''checkout all items in a cart'''
-    # M-Pesa integration
-    # 1)receive phone number from user
-    # 2)send a request to M-Pesa
-    base_url = 'https://4938-102-222-145-50.ngrok-free.app' # use ngrok url
-    resp = requests.get(base_url + '/simulate')
-    print(resp)
-    # 3)receive a response from M-Pesa
-    # 4)update the cart to an order
-    #***************************************************************************************************************************
-    # retrieve transaction details then include them in the order objects below
     carts = Cart.query.filter_by(user_id=current_user.id).all()
+    total = 0
     for cart in carts:
-        order = Order(user_id=current_user.id, product_id=cart.product_id, quantity=cart.quantity, total=cart.product.price * cart.quantity)
-        db.session.add(order)
-        db.session.delete(cart)
-    db.session.commit()
-    flash('Checkout successful!')
-    #return redirect(url_for('main.index'))
-    return render_template('checkout.html')
+        total += cart.product.price * cart.quantity
+    form = MpesaDetailsForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        phone_number = form.phone_number.data
+        # send a request to M-Pesa
+        base_url = 'https://0a14-102-222-145-50.ngrok-free.app' # change this place holder to the actual base url
+        #response = requests.post(base_url + '/simulate', json={'email': email, 'phone_number': phone_number, 'amount': total})
+        response = requests.get(base_url + '/simulate')
+        
+        headers = {'Content-Type': 'application/json'}
+        resp = requests.post(base_url + '/validate-stk', headers=headers)
+        print(f"resp: {resp}")
+        
+        #resp = requests.get(base_url + '/validate-stk')
+        # print(f"MPESA Response Status: {resp.status_code}")
+        # print(f"MPESA Response Headers: {resp.headers}")
+        print(f"MPESA Response Text: {resp.text}")  # Raw output
+
+
+        data = resp.json()
+        print(f"After MPESA->Data: {data} ")
+        if data.get('message') == 'success':
+            # send an email ticket to the user if transaction is successful
+            #*************************************************************
+            # create an order
+            order = Order(user_id=current_user.id, total=total)
+            db.session.add(order)
+            db.session.commit() # because we need order.id in transaction below
+            # create a transaction
+            data = resp.get('data')
+            amount=data[0].get('Value')
+            mpesaReceiptNumber=data[1].get('Value')
+            transactionDate=data[2].get('Value')
+            phoneNumber=data[3].get('Value')
+            transaction = Transaction(user_id=current_user.id, amount=amount, mpesaReceiptNumber=mpesaReceiptNumber, transactionDate=transactionDate, phoneNumber=phoneNumber, order_id=order.id)
+
+            # link the order to the transaction
+            order.transaction_id = transaction.id
+            
+            # create order items to link to our order i.e our order has a linked list of order_items
+            for cart in carts:
+                order_item = OrderItem(order_id=order.id, product_id=cart.product.id, quantity=cart.quantity, price=cart.product.price)
+                db.session.add(order_item)
+                # remove the cart
+                db.session.delete(cart)          
+            db.session.add(order)
+            db.session.add(transaction)
+            db.session.commit()
+            flash('Transaction successful!')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Transaction failed. Please try again.')
+            return redirect(url_for('main.checkout'))
+    return render_template('checkout.html', title='Checkout', form=form)

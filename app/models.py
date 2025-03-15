@@ -44,10 +44,9 @@ class Product(db.Model):
     quantity = db.Column(db.Integer)
     in_stock = db.Column(db.Boolean, default=True)
     image = db.Column(db.String(120), index=True)
-    reviews = db.relationship('Review', backref='product', lazy='dynamic')
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
-    # Add a back-reference to Cart
+    reviews = db.relationship('Review', backref='product', lazy='dynamic')
     carts = db.relationship("Cart", back_populates="product")
 
 class Cart(db.Model):
@@ -66,19 +65,36 @@ class Cart(db.Model):
     
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # this user made this transaction
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    # this product was bought
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-    # this is the quantity of the product bought
-    quantity = db.Column(db.Integer)
-    # this is the total amount of the transaction
-    total = db.Column(db.Float)
-    # retrieve the transaction id from the mpesa response in the confiured callback url in the stk push
-    transaction_id = db.Column(db.String(120), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    total = db.Column(db.Float, nullable=False)  # Total price for the entire order
+    transaction_id = db.Column(db.String(120), index=True, unique=True)
+
+    # Relationship to OrderItem (products in the order)
+    order_items = db.relationship('OrderItem', backref='order', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
-        return '<Order {}>'.format(self.id)
+        return f'<Order {self.id}>'
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)  # Store price at purchase time
+
+    def __repr__(self):
+        return f'<OrderItem Order:{self.order_id}, Product:{self.product_id}>'
+    
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    amount = db.Column(db.Float)
+    phone_number = db.Column(db.String(120), index=True)
+    mpesaReceiptNumber = db.Column(db.String(120), index=True)
+    transactionDate = db.Column(db.String(120), index=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+
     
 @login.user_loader
 def load_user(id):

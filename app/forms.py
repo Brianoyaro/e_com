@@ -48,3 +48,8 @@ class ProductForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.category.choices = [(c.id, c.name) for c in Category.query.all()]
+class MpesaDetailsForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    submit = SubmitField('send')
+    
